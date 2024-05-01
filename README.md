@@ -1,0 +1,2 @@
+# terminal-config
+VSCode extension
