@@ -1,7 +1,7 @@
 ## Basics
 
-- Split may/may not work currently. (Not entirely sure why, but it has to do with how fast the extension gets to that segment).
-- VSCode api seems to be failing (making the terminal split) if it takes > 4ms after the initial creation of the first terminal (My machine, haven't tested anywhere else)
+- If Split isn't working its a load time issues between when your two terminals are created. 
+(Not sure of a fix besides optimizing the extension or why split has such a small window to work with)
 
 - Extension will auto-load terminals based on the folder you load in.
 - Will auto look for a set file and make terminals for any folder(s) that contain it.
