@@ -1,0 +1,449 @@
+{
+  "name": "terminal-config",
+  "displayName": "Terminal-Config",
+  "description": "Handle's terminal configuration, opens terminals and runs commands (based on setting's set in user preferenaces",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WalkOrRun/terminal-config"
+  },
+  "version": "0.5.5",
+  "engines": {
+    "vscode": "^1.82.0"
+  },
+  "publisher": "WalkOrRun",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terminal-config.openTerminal",
+        "title": "Terminal-Config: Run workspace configuration."
+      },
+      {
+        "command": "terminal-config.rerunWorkspaceConfig",
+        "title": "Terminal-Config: Rerun workspace configuration. (Closes terminals)"
+      },
+      {
+        "command": "terminal-config.reloadKeybinds",
+        "title": "Terminal-Config: Reload Keybinds"
+      },
+      {
+        "command": "terminal-config.setKeybindTerminal",
+        "title": "Terminal-Config: Set Keybind Terminal"
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "ctrl+shift+1",
+        "command": "terminal-config.opencommand",
+        "args": [
+          1
+        ]
+      },
+      {
+        "key": "ctrl+shift+2",
+        "command": "terminal-config.opencommand",
+        "args": [
+          2
+        ]
+      },
+      {
+        "key": "ctrl+shift+3",
+        "command": "terminal-config.opencommand",
+        "args": [
+          3
+        ]
+      },
+      {
+        "key": "ctrl+shift+4",
+        "command": "terminal-config.opencommand",
+        "args": [
+          4
+        ]
+      },
+      {
+        "key": "ctrl+shift+5",
+        "command": "terminal-config.opencommand",
+        "args": [
+          5
+        ]
+      },
+      {
+        "key": "ctrl+shift+6",
+        "command": "terminal-config.opencommand",
+        "args": [
+          6
+        ]
+      },
+      {
+        "key": "ctrl+shift+7",
+        "command": "terminal-config.opencommand",
+        "args": [
+          7
+        ]
+      },
+      {
+        "key": "ctrl+shift+8",
+        "command": "terminal-config.opencommand",
+        "args": [
+          8
+        ]
+      },
+      {
+        "key": "ctrl+shift+9",
+        "command": "terminal-config.opencommand",
+        "args": [
+          9
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "Terminal Config",
+      "properties": {
+        "terminal-config": {
+          "type": "object",
+          "description": "The configuration for the terminal to open",
+          "properties": {
+            "profiles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the profile can be used for new configurations"
+                  },
+                  "default": {
+                    "type": "boolean",
+                    "description": "Default terminal for your configurations"
+                  },
+                  "commands": {
+                    "type": "array",
+                    "description": "The command(s) to run in the terminal"
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "The path to run the command in (defaults to the current workspace folder)"
+                  },
+                  "autoClose": {
+                    "type": "boolean",
+                    "description": "If the terminal should be closed after the command has been run"
+                  },
+                  "autoCloseDelay": {
+                    "type": "number",
+                    "description": "The delay in milliseconds before the terminal is closed"
+                  },
+                  "alwaysCreateTerminal": {
+                    "type": "boolean",
+                    "description": "If the terminal should always be created, even if it already exists"
+                  },
+                  "dontCreateTerminal": {
+                    "type": "boolean",
+                    "description": "Do not create a terminal for this workspace"
+                  },
+                  "show": {
+                    "type": "boolean",
+                    "description": "If the terminal should be shown after it has been created"
+                  },
+                  "keybindTerminal": {
+                    "type": "string",
+                    "description": "The name of the terminal to use for keybinds (defaults to the first terminal created)"
+                  },
+                  "createTerminalForKeybindsIfNoTerminal": {
+                    "type": "boolean",
+                    "description": "If a new terminal should be created if there is no terminal for the keybind event"
+                  },
+                  "keybinds": {
+                    "patternProperties": {
+                      "[1-9]": {
+                        "type": "object",
+                        "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                        "properties": {
+                          "commands": {
+                            "type": "array",
+                            "description": "The command(s) to run in the terminal"
+                          },
+                          "actions": {
+                            "type": "array",
+                            "description": "The action(s) to run in the terminal",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "setKeybindTerminal",
+                                "rerunWorkspaceConfig"
+                              ],
+                              "enumDescriptions": [
+                                "Sets the keybind terminal to the currently showing terminal",
+                                "Reruns the workspace configuration"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalTerminals": {
+                    "type": "array",
+                    "description": "Additional terminals to open after the first terminal has been opened",
+                    "items": {
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the terminal to open"
+                        },
+                        "commands": {
+                          "type": "array",
+                          "description": "The command(s) to run in the terminal"
+                        },
+                        "path": {
+                          "type": "string",
+                          "description": "The path to run the command in (defaults to the current workspace folder)"
+                        },
+                        "autoClose": {
+                          "type": "boolean",
+                          "description": "If the terminal should be closed after the command has been run"
+                        },
+                        "autoCloseDelay": {
+                          "type": "number",
+                          "description": "The delay in milliseconds before the terminal is closed"
+                        },
+                        "alwaysCreateTerminal": {
+                          "type": "boolean",
+                          "description": "If the terminal should always be created, even if it already exists"
+                        },
+                        "show": {
+                          "type": "boolean",
+                          "description": "If the terminal should be shown after it has been created"
+                        },
+                        "split": {
+                          "type": "boolean",
+                          "description": "If the terminal should be split from the first terminal"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "initialLoadDelay": {
+              "type": "number",
+              "default": 3,
+              "description": "The time in seconds to wait before initattializing the extension."
+            },
+            "delayAfterRemovingTerminals": {
+              "type": "number",
+              "default": 1,
+              "description": "The time in seconds to wait before initattializing the extension."
+            },
+            "ignoreRegex": {
+              "type": "string",
+              "description": "Calls RegExp(ignoreRegex, 'g') on the path to determine if the terminal should be created"
+            },
+            "createTerminalForKeybindsIfNoTerminal": {
+              "type": "boolean",
+              "default": false,
+              "description": "If a new terminal should be created if there is no terminal for the keybind event"
+            },
+            "fileToFind": {
+              "type": "string",
+              "default": "package.json",
+              "description": "The file to find in the workspace(s) to determine if it needs a terminal opened"
+            },
+            "addNewTerminalToWorkspace": {
+              "type": "boolean",
+              "default": false,
+              "description": "Adds a new workspace to your workspace configuration when a new workspace is found."
+            },
+            "removeTerminalsOnLoad": {
+              "type": "boolean",
+              "default": false,
+              "description": "Removes all previous terminals when workspace is loaded (Global)"
+            },
+            "removeSameNameTerminals": {
+              "type": "boolean",
+              "default": false,
+              "description": "Removes all previous terminals with the same name when workspace is loaded (Global)"
+            },
+            "useDefaultProfileOnNewProjects": {
+              "type": "boolean",
+              "description": "Set to false, if you don't want new projects to get entires in your global user preferenaces"
+            },
+            "globalKeyBinds": {
+              "patternProperties": {
+                "[1-9]": {
+                  "type": "object",
+                  "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                  "properties": {
+                    "commands": {
+                      "type": "array",
+                      "description": "The command(s) to run in the terminal"
+                    },
+                    "actions": {
+                      "type": "array",
+                      "description": "The action(s) to run in the terminal",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "setKeybindTerminal",
+                          "rerunWorkspaceConfig"
+                        ],
+                        "enumDescriptions": [
+                          "Sets the keybind terminal to the currently showing terminal",
+                          "Reruns the workspace configuration"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "patternProperties": {
+            ".*": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the terminal to open"
+                },
+                "profile": {
+                  "type": "string",
+                  "description": "Profile you want this tmerinal to use"
+                },
+                "commands": {
+                  "type": "array",
+                  "description": "The command(s) to run in the terminal"
+                },
+                "path": {
+                  "type": "string",
+                  "description": "The path to run the command in (defaults to the current workspace folder)"
+                },
+                "autoClose": {
+                  "type": "boolean",
+                  "description": "If the terminal should be closed after the command has been run"
+                },
+                "autoCloseDelay": {
+                  "type": "number",
+                  "description": "The delay in milliseconds before the terminal is closed"
+                },
+                "alwaysCreateTerminal": {
+                  "type": "boolean",
+                  "description": "If the terminal should always be created, even if it already exists"
+                },
+                "dontCreateTerminal": {
+                  "type": "boolean",
+                  "description": "Do not create a terminal for this workspace"
+                },
+                "show": {
+                  "type": "boolean",
+                  "description": "If the terminal should be shown after it has been created"
+                },
+                "keybindTerminal": {
+                  "type": "string",
+                  "description": "The name of the terminal to use for keybinds (defaults to the first terminal created)"
+                },
+                "createTerminalForKeybindsIfNoTerminal": {
+                  "type": "boolean",
+                  "description": "If a new terminal should be created if there is no terminal for the keybind event"
+                },
+                "keybinds": {
+                  "patternProperties": {
+                    "[1-9]": {
+                      "type": "object",
+                      "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                      "properties": {
+                        "commands": {
+                          "type": "array",
+                          "description": "The command(s) to run in the terminal"
+                        },
+                        "actions": {
+                          "type": "array",
+                          "description": "The action(s) to run in the terminal",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "setKeybindTerminal",
+                              "rerunWorkspaceConfig"
+                            ],
+                            "enumDescriptions": [
+                              "Sets the keybind terminal to the currently showing terminal",
+                              "Reruns the workspace configuration"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "additionalTerminals": {
+                  "type": "array",
+                  "description": "Additional terminals to open after the first terminal has been opened",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the terminal to open"
+                      },
+                      "profile": {
+                        "type": "string",
+                        "description": "Profile you want this tmerinal to use"
+                      },
+                      "commands": {
+                        "type": "array",
+                        "description": "The command(s) to run in the terminal"
+                      },
+                      "path": {
+                        "type": "string",
+                        "description": "The path to run the command in (defaults to the current workspace folder)"
+                      },
+                      "autoClose": {
+                        "type": "boolean",
+                        "description": "If the terminal should be closed after the command has been run"
+                      },
+                      "autoCloseDelay": {
+                        "type": "number",
+                        "description": "The delay in milliseconds before the terminal is closed"
+                      },
+                      "alwaysCreateTerminal": {
+                        "type": "boolean",
+                        "description": "If the terminal should always be created, even if it already exists"
+                      },
+                      "show": {
+                        "type": "boolean",
+                        "description": "If the terminal should be shown after it has been created"
+                      },
+                      "split": {
+                        "type": "boolean",
+                        "description": "If the terminal should be split from the first terminal"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.82.0",
+    "@vscode/test-electron": "^2.3.4",
+    "eslint": "^8.47.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.1.6"
+  }
+}
