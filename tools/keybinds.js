@@ -64,7 +64,8 @@ async function handleKeyBinds (context, folderPaths, terminalsHash) {
 
 	if (!command) return vscode.window.showErrorMessage(`Terminal-Config: No keybinds set for cntrl+shift+${keybind}`)
 
-	command = structuredClone(command)
+	// Cheep deep copy unless we add more properties in the command object
+	command = { commands: [...command.commands] }
 
 	// We may need to create a terminal .-.
 	const path = folderPaths[workspaceKey] || folderPaths[Object.values(folderPaths)[0]]
