@@ -3,15 +3,15 @@ const vscode = require('vscode')
 let config = {}
 
 module.exports = {
-    getConfig,
-    refreshConfig,
-    addNewProjectToConfigurations
+	getConfig,
+	refreshConfig,
+	addNewProjectToConfigurations
 }
 
 function getConfig (type, defaultValue = false) {
-    const result = config.get(type)
+	const result = config.get(type)
 
-    return result != null ? result : defaultValue
+	return result != null ? result : defaultValue
 }
 
 function refreshConfig () { config = vscode.workspace.getConfiguration('terminal-config') }
