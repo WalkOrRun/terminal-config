@@ -1,4 +1,6 @@
 ## Basics
+- ctrl+1 To rerun the workspace configuration settings
+
 
 - If Split isn't working its a load time issues between when your two terminals are created. 
 (Not sure of a fix besides optimizing the extension or why split has such a small window to work with)
@@ -21,6 +23,35 @@
     // This is a dynamic commmand, a terminal will appear and ask you to insert the value for :message:
     "commands": ["git add .", "git commit -m ':message:'", "git push origin @"]
 }
+```
+
+- Dynamic Terminal Selecting is a thing now.
+- Can be project level or profile level. I recommend doing it on a profile
+- Press escape to not run the configuration (This may default eventually to original configuration settings if available) or select skip.
+```json
+    "profiles": [
+        {
+            "name": "dynamicProfile",
+            "dynamicTerminalSelect": {
+                "option1": {
+                    "commands": ["nvm use 18", "npm run build", "npm run serve"],
+                    "additionalTerminals": [
+                        {
+                            "commands": ["nvm use 18"]
+                        }
+                    ]
+                },
+                "option2": {
+                    "commands": ["nvm use 18", "npm run serve"],
+                    "additionalTerminals": [
+                        {
+                            "commands": ["cd ../server", "nvm use 20", "npm run serve"]
+                        }
+                    ]
+                }
+            }
+        }
+    ]
 ```
 
 - Two command as of now can be called from cntrl+shift+p

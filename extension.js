@@ -268,11 +268,11 @@ async function handleDynamicConfigurationSelect (config, terminalName) {
 	const set = new Set(['allProfiles', 'profiles'])
 	const otherKeys = Object.keys(dynamicSelect).filter(key => !set.has(key))
 
-	const options = [...otherKeys, ...validProfiles]
+	const options = [...otherKeys, ...validProfiles, "skip"]
 
 	const option = await vscode.window.showQuickPick(options, { title: `Select a configuration for the terminal: ${terminalName}` })
 
-	if (!option) return { skip: true }
+	if (!option || option === 'skip') return { skip: true }
 
 	return dynamicSelect[option] || listedProfiles.find(profile => profile.name === option)
 }
