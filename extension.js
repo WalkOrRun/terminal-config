@@ -8,7 +8,7 @@ const { refreshConfig, getConfig, addNewProjectToConfigurations } = require('./t
 const { setGlobalKeyBinds, setLocalKeyBinds, handleKeyBinds } = require('./tools/keybinds')
 const { safe, sleep, clone } = require('./tools/utils')
 const { findBaseFolders, removeDatedFiles } = require('./tools/files')
-const { setDefaultProfiles, getProfile, getProfileKey } = require('./tools/profiles')
+const { setDefaultProfiles, getProfile } = require('./tools/profiles')
 const { handleDynamicCommands } = require('./tools/dynamic_commands')
 const { commandSeperator } = require('./tools/process')
 
@@ -76,6 +76,7 @@ async function activate(context) {
 function deactivate() {}
 
 async function openWorkSpaceTerminals () {
+	console.log('Opening workspace terminals')
 	if (getConfig('removeTerminalsOnLoad')) {
 		for (const terminal of vscode.window.terminals) terminal.dispose()
 		await sleep(getConfig('delayAfterRemovingTerminals') || 1)
@@ -100,7 +101,7 @@ async function createTerminals (folder) {
 	const results = []
 
 	for (const baseFolder of baseFolders) {
-		const { config, terminalName } = getBaseTerminalConfigation(baseFolder)
+		const { config, terminalName } = await getBaseTerminalConfigation(baseFolder)
 		// Results may hold { commands, terminalID, terminal }
 		results.push(await handleTerminalOperations(config, terminalName, null, terminalHash, baseFolder))
 		// const additionalTerminalsResults = await handleAdditionalTerminals(config, baseFolder, terminalHash, baseResults.terminalInformation.pid, terminalName)
@@ -119,15 +120,20 @@ function getFolderConfigurations(folder) {
 	return { baseFolders, terminalHash }
 }
 
-function getBaseTerminalConfigation(baseFolder) {
+async function getBaseTerminalConfigation(baseFolder) {
 	const terminalName = path.basename(baseFolder)
 
 	const useDefaultProfileOnNewProject = getConfig('useDefaultProfileOnNewProjects', true) !== false
-	const config = clone(getConfig(terminalName, (useDefaultProfileOnNewProject && getProfile('default')) || {}))
-	let profile = config.profile ? getConfig('profiles').find(profile => profile.name === config.profile) : false
+	let config = clone(getConfig(terminalName, (useDefaultProfileOnNewProject && getProfile('default')) || {}))
+	if (config.dynamicTerminalSelect) config = await handleDynamicConfigurationSelect(config, terminalName)
+
+	let profile = config.profile ? getConfig('profiles').find(profile => (profile.name || profile) === config.profile) : false
 
 	if (config.profile && !profile) vscode.window.showErrorMessage(`${terminalName}, in configuration is using profile: ${config.profile}, but profile does not exist.`)
-	if (getConfig('addNewTerminalToWorkspace') && !getConfig(terminalName)) addNewProjectToConfigurations(terminalName, useDefaultProfileOnNewProject, getProfileKey('default', 'name'))
+	if (!useDefaultProfileOnNewProject && getConfig('addNewTerminalToWorkspace') && !getConfig(terminalName)) addNewProjectToConfigurations(terminalName, useDefaultProfileOnNewProject, config.profile)
+	if (profile && profile.dynamicTerminalSelect) profile = await handleDynamicConfigurationSelect(profile, terminalName)
+
+	if (profile.skip || config.skip) return
 
 	if (profile) {
 		// Make sure we don't change our object in memory
@@ -145,8 +151,13 @@ async function handleAdditionalTerminals(config, baseFolder, terminalHash, paren
 	const promises = config.additionalTerminals.map(async (configuration, index) => {
 		const baseName = `${terminalName}(${index + 1})`
 
+		if (configuration.dynamicTerminalSelect) configuration = await handleDynamicConfigurationSelect(configuration, baseName)
+
 		let profile = configuration.profile ? getConfig('profiles').find(profile => profile.name === configuration.profile) : false
 		if (configuration.profile && !profile) vscode.window.showErrorMessage(`Terminal Config: Additional terminal for configuration key: ${terminalName}, has profile set to: ${configuration.profile}, but this profile does not exist`)
+		if (profile && profile.dynamicTerminalSelect) profile = await handleDynamicConfigurationSelect(configuration, baseName)
+
+		if (profile.skip || configuration.skip) return
 
 		if (profile) {
 			// Make sure that our object from 'config' doesn't get overriden.
@@ -161,11 +172,7 @@ async function handleAdditionalTerminals(config, baseFolder, terminalHash, paren
 
 	const results = (await Promise.all(promises)).flat()
 
-	return results.reduce((acc, cur) => {
-		if (cur && cur.commands) acc.push(cur)
-
-		return acc
-	}, [])
+	return results.filter(result => result && result.commands)
 }
 
 async function checkConfiguration (configuration, terminalName, terminalHash) {
@@ -246,6 +253,29 @@ async function handleTerminalOperations (configuration, baseName, index, termina
 	return results
 }
 
+async function handleDynamicConfigurationSelect (config, terminalName) {
+	const dynamicSelect = config.dynamicTerminalSelect
+	const listedProfiles = getConfig('profiles')
+	const profileNames = new Set(listedProfiles.map(profile => profile.name))
+
+	const profiles = (dynamicSelect.allProfiles && profiles) || dynamicSelect.profiles || []
+
+	const invalidProfiles = profiles.filter(profile => !profileNames.has(profile))
+	const validProfiles = profiles.filter(profile => profileNames.has(profile))
+
+	if (invalidProfiles.length) vscode.window.showErrorMessage(`The following profiles are invalid: ${invalidProfiles.join(', ')}`)
+
+	const set = new Set(['allProfiles', 'profiles'])
+	const otherKeys = Object.keys(dynamicSelect).filter(key => !set.has(key))
+
+	const options = [...otherKeys, ...validProfiles, "skip"]
+
+	const option = await vscode.window.showQuickPick(options, { title: `Select a configuration for the terminal: ${terminalName}` })
+
+	if (!option || option === 'skip') return { skip: true }
+
+	return dynamicSelect[option] || listedProfiles.find(profile => profile.name === option)
+}
 module.exports = {
 	activate,
 	deactivate

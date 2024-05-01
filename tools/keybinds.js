@@ -8,26 +8,26 @@ const { handleDynamicCommands } = require('./dynamic_commands')
 const keyCommands = { global: {} }
 
 module.exports = {
-    setGlobalKeyBinds,
-    setLocalKeyBinds,
-    handleKeyBinds,
-    getKeybind,
-    setKeybind
+	setGlobalKeyBinds,
+	setLocalKeyBinds,
+	handleKeyBinds,
+	getKeybind,
+	setKeybind
 }
 
 async function getKeybind(key, baseKey) {
-    if (baseKey) return safe(() => keyCommands[baseKey][key])
+	if (baseKey) return safe(() => keyCommands[baseKey][key])
 }
 
 // This is for external use, internal can be handled via the object itself. (Maybe swap to class?)
 function setKeybind ({ key, baseKey, value }) {
-    if (baseKey && key) {
-        if (!keyCommands[baseKey]) keyCommands[baseKey] = {}
+	if (baseKey && key) {
+		if (!keyCommands[baseKey]) keyCommands[baseKey] = {}
 
-        keyCommands[baseKey][key] = value
-    }
-    else if (baseKey) keyCommands[baseKey] = value
-    else if (key) keyCommands[key] = value
+		keyCommands[baseKey][key] = value
+	}
+	else if (baseKey) keyCommands[baseKey] = value
+	else if (key) keyCommands[key] = value
 }
 
 function setGlobalKeyBinds () {
