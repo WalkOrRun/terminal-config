@@ -7,6 +7,8 @@ const { handleDynamicCommands } = require('./dynamic_commands')
 
 const keyCommands = { global: {} }
 
+console.log('test')
+
 module.exports = {
 	setGlobalKeyBinds,
 	setLocalKeyBinds,
@@ -85,7 +87,7 @@ async function handleKeyBinds (context, folderPaths, terminalsHash) {
 
 		delete command.commands
 	}
-	
+
 	await useKeyBind(terminal, command)
 }
 
