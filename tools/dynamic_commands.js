@@ -11,7 +11,7 @@ const { commandSeperator } = require('./process')
 const baseDir = `${__dirname}/..`
 
 module.exports = {
-    handleDynamicCommands
+	handleDynamicCommands
 }
 
 async function handleDynamicCommands(commands, terminal) {
@@ -28,12 +28,11 @@ async function handleDynamicCommands(commands, terminal) {
 	const file = await buildJSONFile(formattedCommands)
 
 	const previouslyActiveTerminal = vscode.window.activeTerminal
-	
+
 
 	// Maybe make this an option in the future, wasn't a fan of it tbb. Can be misleading and breaks if the user runs a process with in the active terminal
 	// const activeTerminal = vscode.window.activeTerminal
 	// const activeChildProcess = await hasChildProcess((await activeTerminal.processId).toString())
-
 	const dynamicCommandsTermianl = terminal || vscode.window.createTerminal({ name: 'Dynamic Commands', color: 'blue' })
 
 	dynamicCommandsTermianl.show()
@@ -43,8 +42,8 @@ async function handleDynamicCommands(commands, terminal) {
 	const filePath = path.join(baseDir, 'files', file)
 
 	const watcher = await watchFile(filePath)
-    // Need some delay, the file isn't always ready to be read (Will need feedback eventually)
-    await sleep(0.01)
+	// Need some delay, the file isn't always ready to be read (Will need feedback eventually)
+	await sleep(0.01)
 	await safe(() => handleResults(filePath, watcher, commands, dynamicCommandsTermianl))
 	// Always close the terminal
 	if (!terminal) setTimeout(() => dynamicCommandsTermianl.dispose(), 5000)
@@ -59,13 +58,13 @@ async function handleDynamicCommands(commands, terminal) {
  */
 async function handleResults (filePath, watcher, commands) {
 	if (!watcher || !watcher.success) return Promise.reject({ message: 'File watcher failed', watcher })
-    // Node allows you to require JSON files, and they will be automatically parsed
+	// Node allows you to require JSON files, and they will be automatically parsed
 	const parsed = require(filePath)
 
 	if (!parsed.results) return Promise.reject('No results found')
 
 	const results = parsed.results
-    const formattedCommands = formatDynamicCommandResults(commands, results)
+	const formattedCommands = formatDynamicCommandResults(commands, results)
 
 	for (const command of formattedCommands) {
 		const terminal = await getTerminalByPID(command.terminalInformation.pid, command.baseFolder, command.terminalInformation.name)

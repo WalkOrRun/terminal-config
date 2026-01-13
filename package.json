@@ -401,6 +401,20 @@
               "type": "boolean",
               "description": "Set to false, if you don't want new projects to get entires in your global user preferenaces"
             },
+            "otherKeyBinds": {
+              "patternProperties": {
+                "*": {
+                  "type": "object",
+                  "description": "Will do a command to currently showing terminal based on the pattern provided",
+                  "properties": {
+                    "commands": {
+                      "type": "array",
+                      "description": "The command(s) to run in the terminal"
+                    }
+                  }
+                }
+              }
+            },
             "globalKeyBinds": {
               "patternProperties": {
                 "[1-9]": {
@@ -713,5 +727,11 @@
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "html-to-image": "^1.11.11",
+    "html2canvas": "^1.4.1",
+    "jsdom": "^24.1.1",
+    "jspdf": "^2.5.1"
   }
 }

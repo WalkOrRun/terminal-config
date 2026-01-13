@@ -5,9 +5,9 @@ const getConfig = require('./config').getConfig
 const safe = require('./utils').safe
 
 module.exports = {
-    findBaseFolders,
-    removeDatedFiles,
-    watchFile
+	findBaseFolders,
+	removeDatedFiles,
+	watchFile
 }
 
 function findBaseFolders(dir, lookup = 'package.json') {
@@ -53,7 +53,7 @@ async function removeDatedFiles() {
 
 		await safe(async () => {
 			const filePath = path.join(basePath, file)
-	
+
 			const parsed = require(filePath)
 			if (!parsed.data || (now - parsed.date > (1 * 60 * 60 * 1000))) await fs.promises.rm(filePath)
 		})
