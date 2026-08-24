@@ -10,6 +10,7 @@ const { safe, sleep, clone } = require('./tools/utils')
 const { findBaseFolders, removeDatedFiles } = require('./tools/files')
 const { setDefaultProfiles, getProfile } = require('./tools/profiles')
 const { handleDynamicCommands } = require('./tools/dynamic_commands')
+const { resolvePasteCommands } = require('./tools/clipboard')
 const { commandSeperator } = require('./tools/process')
 
 refreshConfig()
@@ -57,9 +58,13 @@ async function activate(context) {
 		}
 	})
 
-	const handleKeyBind = vscode.commands.registerCommand('terminal-config.opencommand', async context => await safe(() => handleKeyBinds(context, folderPaths, terminalsHash)))
+	const keybindHandler = async context => await safe(() => handleKeyBinds(context, folderPaths, terminalsHash))
 
-	context.subscriptions.push(handleWorkspaceTerminal, rerunWorkSpaceTerminals, onConfgChange, handleKeyBind, setKeybindTerminal, refreshKeybinds)
+	const handleKeyBind = vscode.commands.registerCommand('terminal-config.opencommand', keybindHandler)
+	// Same handler, nicer name for custom keybindings in the users keybindings.json (No args shows a picker)
+	const runKeyBind = vscode.commands.registerCommand('terminal-config.runKeybind', keybindHandler)
+
+	context.subscriptions.push(handleWorkspaceTerminal, rerunWorkSpaceTerminals, onConfgChange, handleKeyBind, runKeyBind, setKeybindTerminal, refreshKeybinds)
 
 	// Sleep on initial load
 	await sleep(getConfig('initialLoadDelay', 1.75))
@@ -213,6 +218,8 @@ async function handleTerminalOperations (configuration, baseName, index, termina
 
 	// Basename is the folder name/package name so if we want to use keybinds we can do it this way easier :)
 	terminalsHash[terminalName] = baseName
+	// Keybinds may have to create their own terminal, so remember where the configuration lives (Base terminal wins over additional ones)
+	if (!folderPaths[baseName]) folderPaths[baseName] = configuration.path || baseFolder
 
 	const terminal = parentTerminal && configuration.split
 		? vscode.window.createTerminal({ name: terminalName, location: { parentTerminal } })
@@ -228,6 +235,9 @@ async function handleTerminalOperations (configuration, baseName, index, termina
 	if (additionaTerminals.length) results.push(...additionaTerminals)
 
 	if (!configuration.commands) configuration.commands = []
+
+	// <paste> pulls from the clipboard, anything left over becomes a dynamic command so we can ask for it
+	configuration.commands = await resolvePasteCommands(configuration.commands)
 
 	const dynamicCommandsRegex = /:[\s\S]*:/
 	const dynamicCommands = configuration.commands.some(command => dynamicCommandsRegex.test(command))

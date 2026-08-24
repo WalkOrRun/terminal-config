@@ -30,6 +30,10 @@
         "title": "Terminal-Config: Rerun workspace configuration. (Closes terminals)"
       },
       {
+        "command": "terminal-config.runKeybind",
+        "title": "Terminal-Config: Run Keybind"
+      },
+      {
         "command": "terminal-config.reloadKeybinds",
         "title": "Terminal-Config: Reload Keybinds"
       },
@@ -179,10 +183,14 @@
                           },
                           "keybinds": {
                             "patternProperties": {
-                              "[1-9]": {
+                              ".*": {
                                 "type": "object",
-                                "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                                "description": "Keybind name. ctrl+shift+[1-9] are bound out of the box, any other name (custom keybinds) can be bound to terminal-config.runKeybind in your own keybindings.json (Note global keybinds do not run if workspace/folders have keybinds.)",
                                 "properties": {
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Shown as the detail when picking a keybind from the command palette"
+                                  },
                                   "commands": {
                                     "type": "array",
                                     "description": "The command(s) to run in the terminal"
@@ -288,10 +296,14 @@
                   },
                   "keybinds": {
                     "patternProperties": {
-                      "[1-9]": {
+                      ".*": {
                         "type": "object",
-                        "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                        "description": "Keybind name. ctrl+shift+[1-9] are bound out of the box, any other name (custom keybinds) can be bound to terminal-config.runKeybind in your own keybindings.json (Note global keybinds do not run if workspace/folders have keybinds.)",
                         "properties": {
+                          "description": {
+                            "type": "string",
+                            "description": "Shown as the detail when picking a keybind from the command palette"
+                          },
                           "commands": {
                             "type": "array",
                             "description": "The command(s) to run in the terminal"
@@ -403,10 +415,14 @@
             },
             "globalKeyBinds": {
               "patternProperties": {
-                "[1-9]": {
+                ".*": {
                   "type": "object",
-                  "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                  "description": "Keybind name. ctrl+shift+[1-9] are bound out of the box, any other name (custom keybinds) can be bound to terminal-config.runKeybind in your own keybindings.json (Note global keybinds do not run if workspace/folders have keybinds.)",
                   "properties": {
+                    "description": {
+                      "type": "string",
+                      "description": "Shown as the detail when picking a keybind from the command palette"
+                    },
                     "commands": {
                       "type": "array",
                       "description": "The command(s) to run in the terminal"
@@ -480,10 +496,14 @@
                 },
                 "keybinds": {
                   "patternProperties": {
-                    "[1-9]": {
+                    ".*": {
                       "type": "object",
-                      "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                      "description": "Keybind name. ctrl+shift+[1-9] are bound out of the box, any other name (custom keybinds) can be bound to terminal-config.runKeybind in your own keybindings.json (Note global keybinds do not run if workspace/folders have keybinds.)",
                       "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "Shown as the detail when picking a keybind from the command palette"
+                        },
                         "commands": {
                           "type": "array",
                           "description": "The command(s) to run in the terminal"
@@ -617,10 +637,14 @@
                         },
                         "keybinds": {
                           "patternProperties": {
-                            "[1-9]": {
+                            ".*": {
                               "type": "object",
-                              "description": "ctrl+shift+[1-9] will do a command to the currently showing terminal (Note global keybinds don't run if workspace/folders have keybinds.)",
+                              "description": "Keybind name. ctrl+shift+[1-9] are bound out of the box, any other name (custom keybinds) can be bound to terminal-config.runKeybind in your own keybindings.json (Note global keybinds do not run if workspace/folders have keybinds.)",
                               "properties": {
+                                "description": {
+                                  "type": "string",
+                                  "description": "Shown as the detail when picking a keybind from the command palette"
+                                },
                                 "commands": {
                                   "type": "array",
                                   "description": "The command(s) to run in the terminal"
